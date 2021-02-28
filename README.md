@@ -10,10 +10,10 @@ Text file processor.
 IncludeFiles .//*.*
 ExcludeFiles *.jpg *.png *.svg *.mp4
 ReadFiles
-Edit name
+Edit label
 ReplacePrefix prefix_ start_
 ReplaceSuffix _suffix _end
-Edit name text
+Edit label text
 ReplaceText old_text new_text
 ReplaceQuotedText old_quoted_text new_quoted_text
 ReplaceUnquotedText old_unquoted_text new_unquoted_text
@@ -21,7 +21,7 @@ ReplaceIdentifier old_identifier new_identifier
 ReplaceExpression
     old_([A-Z]+)_expression
     new_$1_expression
-WriteFiles
+MoveFiles
 ```
 
 ### Commands
@@ -32,7 +32,7 @@ ExcludeFiles <file name filter> ...
 SelectFiles <file name filter> ...
 IgnoreFiles <file name filter> ...
 ReadFiles
-Edit [folder] [name] [text]
+Edit [folder] [label] [extension] [text]
 AddPrefix <prefix>
 RemovePrefix <prefix>
 ReplacePrefix <old prefix> <new prefix>
@@ -49,7 +49,10 @@ RemoveIdentifier <identifier>
 ReplaceIdentifier<old identifier> <new identifier>
 RemoveExpression <expression>
 ReplaceExpression <old expression> <new expression>
+ListFiles
+DumpFiles
 WriteFiles
+MoveFiles
 ```
 
 ## Installation

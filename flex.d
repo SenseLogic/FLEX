@@ -21,6 +21,7 @@
 // -- IMPORTS
 
 import core.stdc.stdlib : exit;
+import std.algorithm: sort;
 import std.conv : to;
 import std.file : dirEntries, exists, mkdirRecurse, readText, remove, rmdir, write, SpanMode;
 import std.path : globMatch;
@@ -57,6 +58,8 @@ class COMMAND
     {
         return Name ~ " " ~ ArgumentArray.join( ' ' );
     }
+
+    // ~~
 
     string Execute(
         string text
@@ -160,10 +163,11 @@ class FILE
     string
         Path,
         Folder,
-        Name,
+        Label,
+        Extension,
         Text;
     string[ string ]
-        TextMap;
+        PropertyMap;
     bool
         IsSelected,
         IsRead,
@@ -176,21 +180,38 @@ class FILE
         )
     {
         Path = file_path;
-        Path.SplitFilePath( Folder, Name );
+        Path.SplitFilePath( Folder, Label, Extension );
 
-        TextMap[ "folder" ] = Folder;
-        TextMap[ "name" ] = Name;
-        TextMap[ "text" ] = "";
+        PropertyMap[ "folder" ] = Folder;
+        PropertyMap[ "label" ] = Label;
+        PropertyMap[ "extension" ] = Extension;
+        PropertyMap[ "text" ] = "";
 
         IsSelected = true;
     }
 
     // -- INQUIRIES
 
-    string GetPath(
+    string GetFolder(
         )
     {
-        return TextMap[ "folder" ] ~ TextMap[ "name" ];
+        return PropertyMap[ "folder" ];
+    }
+
+    // ~~
+
+    string GetLabel(
+        )
+    {
+        return PropertyMap[ "label" ];
+    }
+
+    // ~~
+
+    string GetExtension(
+        )
+    {
+        return PropertyMap[ "extension" ];
     }
 
     // ~~
@@ -198,7 +219,23 @@ class FILE
     string GetText(
         )
     {
-        return TextMap[ "text" ];
+        return PropertyMap[ "text" ];
+    }
+
+    // ~~
+
+    string GetName(
+        )
+    {
+        return PropertyMap[ "label" ] ~ PropertyMap[ "extension" ];
+    }
+
+    // ~~
+
+    string GetPath(
+        )
+    {
+        return PropertyMap[ "folder" ] ~ GetName();
     }
 
     // ~~
@@ -232,13 +269,32 @@ class FILE
         )
     {
         Text = Path.ReadText();
-        TextMap[ "text" ] = "";
+        PropertyMap[ "text" ] = Text;
         IsRead = true;
     }
 
     // ~~
 
+    void List(
+        string prefix = ""
+        )
+    {
+        writeln( prefix ~ GetPath() );
+    }
+
+    // ~~
+
+    void Dump(
+        )
+    {
+        List( "--- " );
+        writeln( GetText() );
+    }
+
+    // ~~
+
     void Write(
+        bool file_is_moved = false
         )
     {
         string
@@ -253,7 +309,8 @@ class FILE
             if ( file_path != Path
                  || file_text != Text )
             {
-                if ( file_path != Path )
+                if ( file_path != Path
+                     && file_is_moved )
                 {
                     Path.RemoveFile();
                 }
@@ -268,6 +325,14 @@ class FILE
             Abort( "File is not read : " ~ GetPath() );
         }
     }
+
+    // ~~
+
+    void Move(
+        )
+    {
+        Write( true );
+    }
 }
 
 // ~~
@@ -279,7 +344,7 @@ class SCRIPT
     COMMAND[]
         CommandArray;
     string[]
-        SectionNameArray;
+        PropertyNameArray;
     FILE[ string ]
         FileMap;
 
@@ -316,7 +381,7 @@ class SCRIPT
                 {
                     processed_line ~= '\t';
                 }
-                else if ( character != 'v' )
+                else if ( character != '-' )
                 {
                     processed_line ~= character;
                 }
@@ -330,7 +395,54 @@ class SCRIPT
         return processed_line;
     }
 
+    // ~~
+
+    FILE[] GetSortedFileArray(
+        )
+    {
+        FILE[]
+            sorted_file_array;
+
+        foreach ( file; FileMap )
+        {
+            sorted_file_array ~= file;
+        }
+
+        sorted_file_array.sort!(
+            ( first_file, second_file )
+            => ( first_file.GetFolder() < second_file.GetFolder()
+                 || ( first_file.GetFolder() == second_file.GetFolder()
+                      && first_file.GetName() < second_file.GetName() ) )
+            )();
+
+        return sorted_file_array;
+    }
+
     // -- OPERATIONS
+
+    void SetPropertyNameArray(
+        string[] property_name_array
+        )
+    {
+        PropertyNameArray = [];
+
+        foreach ( property_name; property_name_array )
+        {
+            if ( property_name == "folder"
+                 || property_name == "label"
+                 || property_name == "extension"
+                 || property_name == "text" )
+            {
+                PropertyNameArray ~= property_name;
+            }
+            else
+            {
+                Abort( "Invalid property name : " ~ property_name );
+            }
+        }
+    }
+
+    // ~~
 
     void IncludeFiles(
         string[] file_path_filter_array
@@ -482,12 +594,45 @@ class SCRIPT
 
     // ~~
 
+    void ListFiles(
+        )
+    {
+        foreach ( file; GetSortedFileArray() )
+        {
+            file.List();
+        }
+    }
+
+    // ~~
+
+    void DumpFiles(
+        )
+    {
+        foreach ( file; GetSortedFileArray() )
+        {
+            file.Dump();
+        }
+    }
+
+    // ~~
+
     void WriteFiles(
         )
     {
         foreach ( file; FileMap )
         {
             file.Write();
+        }
+    }
+
+    // ~~
+
+    void MoveFiles(
+        )
+    {
+        foreach ( file; FileMap )
+        {
+            file.Move();
         }
     }
 
@@ -534,7 +679,7 @@ class SCRIPT
                 }
             }
 
-            SectionNameArray = [ "text" ];
+            PropertyNameArray = [ "text" ];
         }
         else
         {
@@ -553,34 +698,49 @@ class SCRIPT
 
             if ( command.Name == "Edit" )
             {
-                SectionNameArray = command.ArgumentArray;
+                SetPropertyNameArray( command.ArgumentArray );
             }
             else if ( command.Name == "IncludeFiles"
                       && command.ArgumentArray.length >= 1 )
             {
-                IncludeFiles( command.ArgumentArray );
+                IncludeFiles( command.ArgumentArray.GetLogicalPathArray() );
             }
             else if ( command.Name == "ExcludeFiles" )
             {
-                ExcludeFiles( command.ArgumentArray );
+                ExcludeFiles( command.ArgumentArray.GetLogicalPathArray() );
             }
             else if ( command.Name == "SelectFiles" )
             {
-                SelectFiles( command.ArgumentArray );
+                SelectFiles( command.ArgumentArray.GetLogicalPathArray() );
             }
             else if ( command.Name == "IgnoreFiles" )
             {
-                IgnoreFiles( command.ArgumentArray );
+                IgnoreFiles( command.ArgumentArray.GetLogicalPathArray() );
             }
             else if ( command.Name == "ReadFiles"
                       && command.ArgumentArray.length == 0 )
             {
                 ReadFiles();
             }
+            else if ( command.Name == "ListFiles"
+                      && command.ArgumentArray.length == 0 )
+            {
+                ListFiles();
+            }
+            else if ( command.Name == "DumpFiles"
+                      && command.ArgumentArray.length == 0 )
+            {
+                DumpFiles();
+            }
             else if ( command.Name == "WriteFiles"
                       && command.ArgumentArray.length == 0 )
             {
                 WriteFiles();
+            }
+            else if ( command.Name == "MoveFiles"
+                      && command.ArgumentArray.length == 0 )
+            {
+                MoveFiles();
             }
             else
             {
@@ -588,9 +748,9 @@ class SCRIPT
                 {
                     if ( file.IsSelected )
                     {
-                        foreach ( section_name; SectionNameArray )
+                        foreach ( property_name; PropertyNameArray )
                         {
-                            file.TextMap[ section_name ] = command.Execute( file.TextMap[ section_name ] );
+                            file.PropertyMap[ property_name ] = command.Execute( file.PropertyMap[ property_name ] );
                         }
                     }
                 }
@@ -1406,11 +1566,39 @@ string ReplaceExpression(
 
 // ~~
 
+bool IsFolderPath(
+    string folder_path
+    )
+{
+    return
+        folder_path.endsWith( '/' )
+        || folder_path.endsWith( '\\' );
+}
+
+// ~~
+
 string GetLogicalPath(
     string path
     )
 {
-    return path.replace( "\\", "/" );
+    return path.replace( '\\', '/' );
+}
+
+// ~~
+
+string[] GetLogicalPathArray(
+    string[] path_array
+    )
+{
+    string[]
+        logical_path_array;
+
+    foreach ( path; path_array )
+    {
+        logical_path_array ~= path.GetLogicalPath();
+    }
+
+    return logical_path_array;
 }
 
 // ~~

@@ -1,0 +1,3 @@
+old_text'old_text'old_text
+old_text"old_text"old_text
+old_text`old_text`old_text
