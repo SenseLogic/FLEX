@@ -50,7 +50,9 @@ ReplaceIdentifier<old identifier> <new identifier>
 RemoveExpression <expression>
 ReplaceExpression <old expression> <new expression>
 ListFiles
+ListChangedFiles
 DumpFiles
+DumpChangedFiles
 WriteFiles
 MoveFiles
 ```

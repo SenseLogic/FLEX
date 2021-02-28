@@ -256,6 +256,16 @@ class FILE
 
     // ~~
 
+    bool HasChanged(
+        )
+    {
+        return
+            HasChangedPath()
+            || HasChangedText();
+    }
+
+    // ~~
+
     bool MatchesFilePathFilter(
         string file_path_filter
         )
@@ -276,19 +286,29 @@ class FILE
     // ~~
 
     void List(
+        bool file_has_changed,
         string prefix = ""
         )
     {
-        writeln( prefix ~ GetPath() );
+        if ( !file_has_changed
+             || HasChanged() )
+        {
+            writeln( prefix ~ GetPath() );
+        }
     }
 
     // ~~
 
     void Dump(
+        bool file_has_changed
         )
     {
-        List( "--- " );
-        writeln( GetText() );
+        if ( !file_has_changed
+             || HasChanged() )
+        {
+            writeln( "---" ~ prefix ~ GetPath() );
+            writeln( GetText() );
+        }
     }
 
     // ~~
@@ -599,7 +619,18 @@ class SCRIPT
     {
         foreach ( file; GetSortedFileArray() )
         {
-            file.List();
+            file.List( false );
+        }
+    }
+
+    // ~~
+
+    void ListChangedFiles(
+        )
+    {
+        foreach ( file; GetSortedFileArray() )
+        {
+            file.List( true );
         }
     }
 
@@ -610,7 +641,18 @@ class SCRIPT
     {
         foreach ( file; GetSortedFileArray() )
         {
-            file.Dump();
+            file.Dump( false );
+        }
+    }
+
+    // ~~
+
+    void DumpChangedFiles(
+        )
+    {
+        foreach ( file; GetSortedFileArray() )
+        {
+            file.Dump( true );
         }
     }
 
@@ -727,10 +769,20 @@ class SCRIPT
             {
                 ListFiles();
             }
+            else if ( command.Name == "ListChangedFiles"
+                      && command.ArgumentArray.length == 0 )
+            {
+                ListChangedFiles();
+            }
             else if ( command.Name == "DumpFiles"
                       && command.ArgumentArray.length == 0 )
             {
                 DumpFiles();
+            }
+            else if ( command.Name == "DumpChangedFiles"
+                      && command.ArgumentArray.length == 0 )
+            {
+                DumpChangedFiles();
             }
             else if ( command.Name == "WriteFiles"
                       && command.ArgumentArray.length == 0 )
