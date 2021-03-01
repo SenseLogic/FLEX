@@ -7,12 +7,9 @@ Text file processor.
 ## Sample
 
 ```bash
-IncludeFiles .//*.*
+IncludeFiles IN//*.*
 ExcludeFiles *.jpg *.png *.svg *.mp4
 ReadFiles
-Edit label
-ReplacePrefix prefix_ start_
-ReplaceSuffix _suffix _end
 Edit label text
 ReplaceText old_text new_text
 ReplaceQuotedText old_quoted_text new_quoted_text
@@ -21,7 +18,13 @@ ReplaceIdentifier old_identifier new_identifier
 ReplaceExpression
     old_([A-Z]+)_expression
     new_$1_expression
-MoveFiles
+Edit label
+ReplacePrefix prefix_ start_
+ReplaceSuffix _suffix _end
+Edit folder
+ReplacePrefix IN/ OUT/
+DumpChangedFiles
+WriteFiles
 ```
 
 ### Commands
