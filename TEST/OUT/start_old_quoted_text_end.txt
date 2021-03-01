@@ -1,0 +1,3 @@
+old_quoted_text'new_quoted_text'old_quoted_text
+old_quoted_text"new_quoted_text"old_quoted_text
+old_quoted_text`new_quoted_text`old_quoted_text

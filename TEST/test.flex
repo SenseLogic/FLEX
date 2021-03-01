@@ -14,6 +14,5 @@ ReplacePrefix prefix_ start_
 ReplaceSuffix _suffix _end
 Edit folder
 ReplacePrefix IN/ OUT/
-ListFiles
-DumpFiles
-#WriteFiles
+DumpChangedFiles
+WriteFiles

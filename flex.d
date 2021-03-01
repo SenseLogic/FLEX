@@ -286,14 +286,13 @@ class FILE
     // ~~
 
     void List(
-        bool file_has_changed,
-        string prefix = ""
+        bool file_has_changed
         )
     {
         if ( !file_has_changed
              || HasChanged() )
         {
-            writeln( prefix ~ GetPath() );
+            writeln( GetPath() );
         }
     }
 
@@ -306,7 +305,7 @@ class FILE
         if ( !file_has_changed
              || HasChanged() )
         {
-            writeln( "---" ~ prefix ~ GetPath() );
+            writeln( "---" ~ GetPath() );
             writeln( GetText() );
         }
     }
