@@ -52,6 +52,15 @@ RemoveIdentifier <identifier>
 ReplaceIdentifier<old identifier> <new identifier>
 RemoveExpression <expression>
 ReplaceExpression <old expression> <new expression>
+SetLowerCase
+SetUpperCase
+SetMinorCase
+SetMajorCase
+SetCamelCase
+SetPascalCase
+SetSnakeCase
+SetKebabCase
+SetTitleCase
 ListFiles
 ListChangedFiles
 DumpFiles

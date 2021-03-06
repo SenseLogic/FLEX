@@ -145,6 +145,51 @@ class COMMAND
         {
             return text.ReplaceExpression( ArgumentArray[ 0 ], ArgumentArray[ 1 ] );
         }
+        else if ( Name == "SetLowerCase"
+                  && ArgumentArray.length == 0 )
+        {
+            return text.GetLowerCaseText();
+        }
+        else if ( Name == "SetUpperCase"
+                  && ArgumentArray.length == 0 )
+        {
+            return text.GetUpperCaseText();
+        }
+        else if ( Name == "SetMinorCase"
+                  && ArgumentArray.length == 0 )
+        {
+            return text.GetMinorCaseText();
+        }
+        else if ( Name == "SetMajorCase"
+                  && ArgumentArray.length == 0 )
+        {
+            return text.GetMajorCaseText();
+        }
+        else if ( Name == "SetCamelCase"
+                  && ArgumentArray.length == 0 )
+        {
+            return text.GetCamelCaseText();
+        }
+        else if ( Name == "SetPascalCase"
+                  && ArgumentArray.length == 0 )
+        {
+            return text.GetPascalCaseText();
+        }
+        else if ( Name == "SetSnakeCase"
+                  && ArgumentArray.length == 0 )
+        {
+            return text.GetSnakeCaseText();
+        }
+        else if ( Name == "SetKebabCase"
+                  && ArgumentArray.length == 0 )
+        {
+            return text.GetKebabCaseText();
+        }
+        else if ( Name == "SetTitleCase"
+                  && ArgumentArray.length == 0 )
+        {
+            return text.GetTitleCaseText();
+        }
         else
         {
             Abort( "Invalid command : " ~ GetText() );
@@ -999,7 +1044,7 @@ bool IsUpperCaseLetter(
 
 // ~~
 
-bool IsSetter(
+bool IsLetter(
     dchar character
     )
 {
@@ -1169,7 +1214,7 @@ string GetCamelCaseText(
     foreach ( dchar character; text )
     {
         if ( character.IsLowerCaseLetter()
-             && !prior_character.IsSetter() )
+             && !prior_character.IsLetter() )
         {
             camel_case_text ~= character.GetUpperCaseCharacter();
         }
@@ -1181,7 +1226,16 @@ string GetCamelCaseText(
         prior_character = character;
     }
 
-    return camel_case_text;
+    return camel_case_text.replace( "_", "" );
+}
+
+// ~~
+
+string GetPascalCaseText(
+    string text
+    )
+{
+    return text.GetCamelCaseText().GetMajorCaseText();
 }
 
 // ~~
@@ -1215,7 +1269,35 @@ string GetSnakeCaseText(
         prior_character = character;
     }
 
-    return snake_case_text;
+    return snake_case_text.GetLowerCaseText();
+}
+
+// ~~
+
+string GetKebabCaseText(
+    string text
+    )
+{
+    return text.GetSnakeCaseText().replace( '_', '-' );
+}
+
+// ~~
+
+string GetTitleCaseText(
+    string text
+    )
+{
+    string[]
+        word_array;
+
+    word_array = text.GetSnakeCaseText().GetLowerCaseText().split( '_' );
+
+    foreach ( ref word; word_array )
+    {
+        word = word.GetMajorCaseText();
+    }
+
+    return word_array.join( " " );
 }
 
 // ~~

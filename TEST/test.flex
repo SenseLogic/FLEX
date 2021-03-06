@@ -12,6 +12,7 @@ ReplaceExpression
 Edit label
 ReplacePrefix prefix_ start_
 ReplaceSuffix _suffix _end
+SetPascalCase
 Edit folder
 ReplacePrefix IN/ OUT/
 DumpChangedFiles
