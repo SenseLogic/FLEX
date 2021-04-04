@@ -350,7 +350,7 @@ class FILE
         if ( !file_has_changed
              || HasChanged() )
         {
-            writeln( "---" ~ GetPath() );
+            writeln( "--- " ~ GetPath() );
             writeln( GetText() );
         }
     }
@@ -375,7 +375,7 @@ class FILE
 
         if ( HasChanged() )
         {
-            writeln( "---" ~ GetPath() );
+            writeln( "--- " ~ GetPath() );
 
             old_line_array = Text.split( '\n' );
             new_line_array = GetText().split( '\n' );
