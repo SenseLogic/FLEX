@@ -357,6 +357,107 @@ class FILE
 
     // ~~
 
+    void DumpChangedLines(
+        long minimum_same_line_count
+        )
+    {
+        string[]
+            new_line_array,
+            old_line_array;
+        long
+            first_same_new_line_index,
+            first_same_old_line_index,
+            new_line_count,
+            new_line_index,
+            old_line_count,
+            old_line_index,
+            same_line_count;
+
+        if ( HasChanged() )
+        {
+            writeln( "---" ~ GetPath() );
+
+            old_line_array = Text.split( '\n' );
+            new_line_array = GetText().split( '\n' );
+
+            old_line_count = old_line_array.length;
+            new_line_count = new_line_array.length;
+
+            while ( old_line_count > 0
+                    && new_line_count > 0
+                    && old_line_array[ old_line_count - 1 ] == new_line_array[ new_line_count - 1 ] )
+            {
+                --old_line_count;
+                --new_line_count;
+            }
+
+            old_line_index = 0;
+            new_line_index = 0;
+
+            while ( new_line_index < new_line_count )
+            {
+                if ( old_line_index < old_line_count )
+                {
+                    if ( old_line_array[ old_line_index ] == new_line_array[ new_line_index ] )
+                    {
+                        ++old_line_index;
+                        ++new_line_index;
+                    }
+                    else
+                    {
+                        same_line_count = 0;
+
+                        for ( first_same_new_line_index = new_line_index;
+                              first_same_new_line_index < new_line_count;
+                              ++first_same_new_line_index )
+                        {
+                            for ( first_same_old_line_index = old_line_index;
+                                  first_same_old_line_index < old_line_count;
+                                  ++first_same_old_line_index )
+                            {
+                                same_line_count = 0;
+
+                                while ( same_line_count < minimum_same_line_count
+                                        && first_same_old_line_index + same_line_count < old_line_count
+                                        && first_same_new_line_index + same_line_count < new_line_count
+                                        && old_line_array[ first_same_old_line_index + same_line_count ]
+                                           == new_line_array[ first_same_new_line_index + same_line_count ] )
+                                {
+                                    ++same_line_count;
+                                }
+
+                                if ( same_line_count == minimum_same_line_count )
+                                {
+                                    break;
+                                }
+                            }
+
+                            if ( same_line_count == minimum_same_line_count )
+                            {
+                                break;
+                            }
+                        }
+
+                        while ( new_line_index < first_same_new_line_index )
+                        {
+                            writeln( "[", new_line_index + 1, "] ", new_line_array[ new_line_index ] );
+                            ++new_line_index;
+                        }
+
+                        old_line_index = first_same_old_line_index;
+                    }
+                }
+                else
+                {
+                    writeln( "[", new_line_index + 1, "] ", new_line_array[ new_line_index ] );
+                    ++new_line_index;
+                }
+            }
+        }
+    }
+
+    // ~~
+
     void Write(
         bool file_is_moved = false
         )
@@ -420,10 +521,14 @@ class SCRIPT
     {
         char
             character;
+        long
+            character_index;
         string
             processed_line;
 
-        foreach ( character_index; 0 .. line.length )
+        for ( character_index = 0;
+              character_index < line.length;
+              ++character_index )
         {
             character = line[ character_index ];
 
@@ -527,7 +632,7 @@ class SCRIPT
             {
                 if ( folder_entry.isFile )
                 {
-                    file_path = folder_entry.name;
+                    file_path = folder_entry.name.GetLogicalPath();
 
                     if ( ( file_path in FileMap ) is null )
                     {
@@ -702,6 +807,18 @@ class SCRIPT
 
     // ~~
 
+    void DumpChangedLines(
+        long minimum_same_line_count
+        )
+    {
+        foreach ( file; GetSortedFileArray() )
+        {
+            file.DumpChangedLines( minimum_same_line_count );
+        }
+    }
+
+    // ~~
+
     void WriteFiles(
         )
     {
@@ -827,6 +944,17 @@ class SCRIPT
                       && command.ArgumentArray.length == 0 )
             {
                 DumpChangedFiles();
+            }
+            else if ( command.Name == "DumpChangedLines"
+                      && command.ArgumentArray.length == 0 )
+            {
+                DumpChangedLines( 5 );
+            }
+            else if ( command.Name == "DumpChangedLines"
+                      && command.ArgumentArray.length == 1
+                      && command.ArgumentArray[ 0 ].IsInteger() )
+            {
+                DumpChangedLines( command.ArgumentArray[ 0 ].GetInteger() );
             }
             else if ( command.Name == "WriteFiles"
                       && command.ArgumentArray.length == 0 )

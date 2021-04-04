@@ -24,6 +24,7 @@ ReplaceSuffix _suffix _end
 Edit folder
 ReplacePrefix IN/ OUT/
 DumpChangedFiles
+DumpChangedLines
 WriteFiles
 ```
 
@@ -31,9 +32,9 @@ WriteFiles
 
 ```bash
 IncludeFiles <file path filter> ...
-ExcludeFiles <file name filter> ...
-SelectFiles <file name filter> ...
-IgnoreFiles <file name filter> ...
+ExcludeFiles [file name filter] ...
+SelectFiles [file name filter] ...
+IgnoreFiles [file name filter] ...
 ReadFiles
 Edit [folder] [label] [extension] [text]
 AddPrefix <prefix>
@@ -65,6 +66,7 @@ ListFiles
 ListChangedFiles
 DumpFiles
 DumpChangedFiles
+DumpChangedLines [minimum same line count]
 WriteFiles
 MoveFiles
 ```

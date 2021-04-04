@@ -16,4 +16,5 @@ SetPascalCase
 Edit folder
 ReplacePrefix IN/ OUT/
 DumpChangedFiles
+DumpChangedLines
 WriteFiles
