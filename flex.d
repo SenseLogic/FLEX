@@ -2173,7 +2173,6 @@ void main(
 {
     string
         input_folder_path,
-        option,
         output_folder_path;
 
     argument_array = argument_array[ 1 .. $ ];
