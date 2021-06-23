@@ -21,7 +21,7 @@
 // -- IMPORTS
 
 import core.stdc.stdlib : exit;
-import std.algorithm: sort;
+import std.algorithm: countUntil, sort;
 import std.conv : to;
 import std.file : dirEntries, exists, mkdirRecurse, readText, remove, rmdir, write, SpanMode;
 import std.path : globMatch;
@@ -62,131 +62,137 @@ class COMMAND
     // ~~
 
     string Execute(
-        string text
+        string text,
+        string[] argument_array
         )
     {
         if ( Name == "AddPrefix"
-             && ArgumentArray.length == 1 )
+             && argument_array.length == 1 )
         {
-            return text.AddPrefix( ArgumentArray[ 0 ] );
+            return text.AddPrefix( argument_array[ 0 ] );
         }
         else if ( Name == "RemovePrefix"
-                  && ArgumentArray.length == 1 )
+                  && argument_array.length == 1 )
         {
-            return text.RemovePrefix( ArgumentArray[ 0 ] );
+            return text.RemovePrefix( argument_array[ 0 ] );
         }
         else if ( Name == "ReplacePrefix"
-                  && ArgumentArray.length == 2 )
+                  && argument_array.length == 2 )
         {
-            return text.ReplacePrefix( ArgumentArray[ 0 ], ArgumentArray[ 1 ] );
+            return text.ReplacePrefix( argument_array[ 0 ], argument_array[ 1 ] );
         }
         else if ( Name == "AddSuffix"
-                  && ArgumentArray.length == 1 )
+                  && argument_array.length == 1 )
         {
-            return text.AddSuffix( ArgumentArray[ 0 ] );
+            return text.AddSuffix( argument_array[ 0 ] );
         }
         else if ( Name == "RemoveSuffix"
-                  && ArgumentArray.length == 1 )
+                  && argument_array.length == 1 )
         {
-            return text.RemoveSuffix( ArgumentArray[ 0 ] );
+            return text.RemoveSuffix( argument_array[ 0 ] );
         }
         else if ( Name == "ReplaceSuffix"
-                  && ArgumentArray.length == 2 )
+                  && argument_array.length == 2 )
         {
-            return text.ReplaceSuffix( ArgumentArray[ 0 ], ArgumentArray[ 1 ] );
+            return text.ReplaceSuffix( argument_array[ 0 ], argument_array[ 1 ] );
+        }
+        else if ( Name == "SetText"
+                  && argument_array.length == 1 )
+        {
+            return argument_array[ 0 ];
         }
         else if ( Name == "RemoveText"
-                  && ArgumentArray.length == 1 )
+                  && argument_array.length == 1 )
         {
-            return text.RemoveText( ArgumentArray[ 0 ] );
+            return text.RemoveText( argument_array[ 0 ] );
         }
         else if ( Name == "ReplaceText"
-                  && ArgumentArray.length == 2 )
+                  && argument_array.length == 2 )
         {
-            return text.ReplaceText( ArgumentArray[ 0 ], ArgumentArray[ 1 ] );
+            return text.ReplaceText( argument_array[ 0 ], argument_array[ 1 ] );
         }
         else if ( Name == "RemoveUnquotedText"
-                  && ArgumentArray.length == 1 )
+                  && argument_array.length == 1 )
         {
-            return text.RemoveUnquotedText( ArgumentArray[ 0 ] );
+            return text.RemoveUnquotedText( argument_array[ 0 ] );
         }
         else if ( Name == "ReplaceUnquotedText"
-                  && ArgumentArray.length == 2 )
+                  && argument_array.length == 2 )
         {
-            return text.ReplaceUnquotedText( ArgumentArray[ 0 ], ArgumentArray[ 1 ] );
+            return text.ReplaceUnquotedText( argument_array[ 0 ], argument_array[ 1 ] );
         }
         else if ( Name == "RemoveQuotedText"
-                  && ArgumentArray.length == 1 )
+                  && argument_array.length == 1 )
         {
-            return text.RemoveQuotedText( ArgumentArray[ 0 ] );
+            return text.RemoveQuotedText( argument_array[ 0 ] );
         }
         else if ( Name == "ReplaceQuotedText"
-                  && ArgumentArray.length == 2 )
+                  && argument_array.length == 2 )
         {
-            return text.ReplaceQuotedText( ArgumentArray[ 0 ], ArgumentArray[ 1 ] );
+            return text.ReplaceQuotedText( argument_array[ 0 ], argument_array[ 1 ] );
         }
         else if ( Name == "RemoveIdentifier"
-                  && ArgumentArray.length == 1 )
+                  && argument_array.length == 1 )
         {
-            return text.RemoveIdentifier( ArgumentArray[ 0 ] );
+            return text.RemoveIdentifier( argument_array[ 0 ] );
         }
         else if ( Name == "ReplaceIdentifier"
-                  && ArgumentArray.length == 2 )
+                  && argument_array.length == 2 )
         {
-            return text.ReplaceIdentifier( ArgumentArray[ 0 ], ArgumentArray[ 1 ] );
+            return text.ReplaceIdentifier( argument_array[ 0 ], argument_array[ 1 ] );
         }
         else if ( Name == "RemoveExpression"
-                  && ArgumentArray.length == 1 )
+                  && argument_array.length == 1 )
         {
-            return text.RemoveExpression( ArgumentArray[ 0 ] );
+            return text.RemoveExpression( argument_array[ 0 ] );
         }
         else if ( Name == "ReplaceExpression"
-                  && ArgumentArray.length == 2 )
+                  && argument_array.length == 2 )
         {
-            return text.ReplaceExpression( ArgumentArray[ 0 ], ArgumentArray[ 1 ] );
+            return text.ReplaceExpression( argument_array[ 0 ], argument_array[ 1 ] );
         }
         else if ( Name == "SetLowerCase"
-                  && ArgumentArray.length == 0 )
+                  && argument_array.length == 0 )
         {
             return text.GetLowerCaseText();
         }
         else if ( Name == "SetUpperCase"
-                  && ArgumentArray.length == 0 )
+                  && argument_array.length == 0 )
         {
             return text.GetUpperCaseText();
         }
         else if ( Name == "SetMinorCase"
-                  && ArgumentArray.length == 0 )
+                  && argument_array.length == 0 )
         {
             return text.GetMinorCaseText();
         }
         else if ( Name == "SetMajorCase"
-                  && ArgumentArray.length == 0 )
+                  && argument_array.length == 0 )
         {
             return text.GetMajorCaseText();
         }
         else if ( Name == "SetCamelCase"
-                  && ArgumentArray.length == 0 )
+                  && argument_array.length == 0 )
         {
             return text.GetCamelCaseText();
         }
         else if ( Name == "SetPascalCase"
-                  && ArgumentArray.length == 0 )
+                  && argument_array.length == 0 )
         {
             return text.GetPascalCaseText();
         }
         else if ( Name == "SetSnakeCase"
-                  && ArgumentArray.length == 0 )
+                  && argument_array.length == 0 )
         {
             return text.GetSnakeCaseText();
         }
         else if ( Name == "SetKebabCase"
-                  && ArgumentArray.length == 0 )
+                  && argument_array.length == 0 )
         {
             return text.GetKebabCaseText();
         }
         else if ( Name == "SetTitleCase"
-                  && ArgumentArray.length == 0 )
+                  && argument_array.length == 0 )
         {
             return text.GetTitleCaseText();
         }
@@ -512,6 +518,8 @@ class SCRIPT
         PropertyNameArray;
     FILE[ string ]
         FileMap;
+    string[ string ]
+        DefinitionValueMap;
 
     // -- INQUIRIES
 
@@ -587,9 +595,131 @@ class SCRIPT
         return sorted_file_array;
     }
 
+    // ~~
+
+    string[] GetProcessedArgumentArray(
+        string[] argument_array
+        )
+    {
+        string
+            old_processed_command_argument,
+            processed_command_argument;
+        string[]
+            processed_argument_array;
+
+        foreach ( command_argument; argument_array )
+        {
+            processed_command_argument = command_argument;
+
+            do
+            {
+                old_processed_command_argument = processed_command_argument;
+
+                foreach ( definition_name, definition_value; DefinitionValueMap )
+                {
+                    processed_command_argument = processed_command_argument.replace( definition_name, definition_value );
+                }
+            }
+            while ( processed_command_argument != old_processed_command_argument );
+
+            processed_argument_array ~= processed_command_argument;
+        }
+
+        return processed_argument_array;
+    }
+
+    // ~~
+
+    long GetEndCommandIndex(
+        long first_command_index,
+        long post_command_index
+        )
+    {
+        long
+            command_index,
+            level_index;
+        COMMAND
+            command;
+
+        level_index = 0;
+
+        for ( command_index = first_command_index;
+              command_index < post_command_index;
+              ++command_index )
+        {
+            command = CommandArray[ command_index ];
+
+            if ( command.Name == "ForEachDefinition" )
+            {
+                ++level_index;
+            }
+            else if ( command.Name == "End" )
+            {
+                if ( level_index == 0 )
+                {
+                    return command_index;
+                }
+                else
+                {
+                    --level_index;
+                }
+            }
+        }
+
+        Abort( "Can't find matching End command" );
+
+        return -1;
+    }
+
     // -- OPERATIONS
 
-    void SetPropertyNameArray(
+    void SetDefinition(
+        string definition_name,
+        string definition_value
+        )
+    {
+        DefinitionValueMap[ definition_name ] = definition_value;
+    }
+
+    // ~~
+
+    void ForEachDefinition(
+        string[] definition_name_array,
+        string[] definition_value_array,
+        long first_command_index,
+        long post_command_index
+        )
+    {
+        long
+            definition_value_index;
+
+        foreach ( definition_name; definition_name_array )
+        {
+            DefinitionValueMap[ definition_name ] = "";
+        }
+
+        definition_value_index = 0;
+
+        while ( definition_value_index + definition_name_array.length <= definition_value_array.length )
+        {
+            foreach ( definition_name; definition_name_array )
+            {
+                DefinitionValueMap[ definition_name ] = definition_value_array[ definition_value_index ];
+                ++definition_value_index;
+            }
+
+            ExecuteCommands( first_command_index, post_command_index );
+        }
+
+        foreach ( definition_name; definition_name_array )
+        {
+            DefinitionValueMap.remove( definition_name );
+        }
+    }
+
+    // ~~
+
+    void Edit(
         string[] property_name_array
         )
     {
@@ -841,7 +971,7 @@ class SCRIPT
 
     // ~~
 
-    void Load(
+    void LoadCommands(
         string file_path
         )
     {
@@ -892,77 +1022,113 @@ class SCRIPT
 
     // ~~
 
-    void Execute(
+    void ExecuteCommands(
+        long first_command_index,
+        long post_command_index
         )
     {
-        foreach ( command; CommandArray )
+        long
+            colon_argument_index,
+            command_index,
+            end_command_index;
+        string[]
+            processed_argument_array;
+        COMMAND
+            command;
+
+        for ( command_index = first_command_index;
+              command_index < post_command_index;
+              ++command_index )
         {
+            command = CommandArray[ command_index ];
+            processed_argument_array = GetProcessedArgumentArray( command.ArgumentArray );
+
             writeln( command.GetText() );
 
-            if ( command.Name == "Edit" )
+            if ( command.Name == "SetDefinition"
+                 && processed_argument_array.length >= 1 )
             {
-                SetPropertyNameArray( command.ArgumentArray );
+                SetDefinition( command.ArgumentArray[ 0 ], processed_argument_array[ 1 .. $ ].join( ' ' ) );
+            }
+            else if ( command.Name == "ForEachDefinition"
+                      && processed_argument_array.length >= 1 )
+            {
+                colon_argument_index = command.ArgumentArray.countUntil( ":" );
+                end_command_index = GetEndCommandIndex( command_index + 1, post_command_index );
+
+                ForEachDefinition(
+                    command.ArgumentArray[ 0 .. colon_argument_index ],
+                    processed_argument_array[ colon_argument_index + 1 .. $ ],
+                    command_index + 1,
+                    end_command_index
+                    );
+
+                command_index = end_command_index;
+            }
+            else if ( command.Name == "Edit" )
+            {
+                Edit( processed_argument_array );
             }
             else if ( command.Name == "IncludeFiles"
-                      && command.ArgumentArray.length >= 1 )
+                      && processed_argument_array.length >= 1 )
             {
-                IncludeFiles( command.ArgumentArray.GetLogicalPathArray() );
+                IncludeFiles( processed_argument_array.GetLogicalPathArray() );
             }
             else if ( command.Name == "ExcludeFiles" )
             {
-                ExcludeFiles( command.ArgumentArray.GetLogicalPathArray() );
+                ExcludeFiles( processed_argument_array.GetLogicalPathArray() );
             }
             else if ( command.Name == "SelectFiles" )
             {
-                SelectFiles( command.ArgumentArray.GetLogicalPathArray() );
+                SelectFiles( processed_argument_array.GetLogicalPathArray() );
             }
             else if ( command.Name == "IgnoreFiles" )
             {
-                IgnoreFiles( command.ArgumentArray.GetLogicalPathArray() );
+                IgnoreFiles( processed_argument_array.GetLogicalPathArray() );
             }
             else if ( command.Name == "ReadFiles"
-                      && command.ArgumentArray.length == 0 )
+                      && processed_argument_array.length == 0 )
             {
                 ReadFiles();
             }
             else if ( command.Name == "ListFiles"
-                      && command.ArgumentArray.length == 0 )
+                      && processed_argument_array.length == 0 )
             {
                 ListFiles();
             }
             else if ( command.Name == "ListChangedFiles"
-                      && command.ArgumentArray.length == 0 )
+                      && processed_argument_array.length == 0 )
             {
                 ListChangedFiles();
             }
             else if ( command.Name == "DumpFiles"
-                      && command.ArgumentArray.length == 0 )
+                      && processed_argument_array.length == 0 )
             {
                 DumpFiles();
             }
             else if ( command.Name == "DumpChangedFiles"
-                      && command.ArgumentArray.length == 0 )
+                      && processed_argument_array.length == 0 )
             {
                 DumpChangedFiles();
             }
             else if ( command.Name == "DumpChangedLines"
-                      && command.ArgumentArray.length == 0 )
+                      && processed_argument_array.length == 0 )
             {
                 DumpChangedLines( 5 );
             }
             else if ( command.Name == "DumpChangedLines"
-                      && command.ArgumentArray.length == 1
-                      && command.ArgumentArray[ 0 ].IsInteger() )
+                      && processed_argument_array.length == 1
+                      && processed_argument_array[ 0 ].IsInteger() )
             {
-                DumpChangedLines( command.ArgumentArray[ 0 ].GetInteger() );
+                DumpChangedLines( processed_argument_array[ 0 ].GetInteger() );
             }
             else if ( command.Name == "WriteFiles"
-                      && command.ArgumentArray.length == 0 )
+                      && processed_argument_array.length == 0 )
             {
                 WriteFiles();
             }
             else if ( command.Name == "MoveFiles"
-                      && command.ArgumentArray.length == 0 )
+                      && processed_argument_array.length == 0 )
             {
                 MoveFiles();
             }
@@ -974,12 +1140,21 @@ class SCRIPT
                     {
                         foreach ( property_name; PropertyNameArray )
                         {
-                            file.PropertyMap[ property_name ] = command.Execute( file.PropertyMap[ property_name ] );
+                            file.PropertyMap[ property_name ]
+                                = command.Execute( file.PropertyMap[ property_name ], processed_argument_array );
                         }
                     }
                 }
             }
         }
+    }
+
+    // ~~
+
+    void ExecuteCommands(
+        )
+    {
+        ExecuteCommands( 0, CommandArray.length );
     }
 }
 
@@ -2161,8 +2336,8 @@ void ExecuteScript(
         script;
 
     script = new SCRIPT();
-    script.Load( script_file_path );
-    script.Execute();
+    script.LoadCommands( script_file_path );
+    script.ExecuteCommands();
 }
 
 // ~~

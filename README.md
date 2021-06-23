@@ -31,6 +31,10 @@ WriteFiles
 ### Commands
 
 ```bash
+# comment
+SetDefinition <definition name> <definition value>
+ForEachDefinition <definition name> ... : <definition value> ...
+End
 IncludeFiles <file path filter> ...
 ExcludeFiles [file name filter] ...
 SelectFiles [file name filter] ...
@@ -43,6 +47,7 @@ ReplacePrefix <old prefix> <new prefix>
 AddSuffix <suffix>
 RemoveSuffix <suffix>
 ReplaceSuffix <old suffix> <new suffix>
+SetText <text>
 RemoveText <text>
 ReplaceText <old text> <new text>
 RemoveUnquotedText <unquoted text>
