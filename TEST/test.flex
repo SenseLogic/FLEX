@@ -1,5 +1,6 @@
 IncludeFiles IN//*.*
 ExcludeFiles *.jpg *.png *.svg *.mp4
+ExcludeFiles test.*
 ReadFiles
 Edit label text
 ReplaceText old_text new_text
@@ -18,3 +19,34 @@ ReplacePrefix IN/ OUT/
 DumpChangedFiles
 DumpChangedLines
 WriteFiles
+
+ForEachDefinition {first_name} {last_name} : 
+    Harrison
+    Ford 
+    Rutger
+    Hauer 
+    Edward James
+    Olmos
+    Sean
+    Young 
+    Dary
+    Hannah
+ExcludeFiles
+IncludeFiles IN//test.*
+ReadFiles
+Edit folder
+ReplacePrefix IN/ OUT/
+Edit label
+SetText Test
+AddSuffix 
+    {first_name}{last_name}
+RemoveText \s
+Edit text
+ReplaceText 
+    FIRST NAME
+    {first_name}
+ReplaceText
+    LAST NAME
+    {last_name}
+WriteFiles
+End

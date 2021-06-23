@@ -56,7 +56,7 @@ class COMMAND
     string GetText(
         )
     {
-        return Name ~ " " ~ ArgumentArray.join( ' ' );
+        return Name ~ " " ~ ArgumentArray.join( ' ' ).replace( "\n", "\\n" ).replace( "\r", "\\r" ).replace( "\t", "\\t" );
     }
 
     // ~~
@@ -523,8 +523,8 @@ class SCRIPT
 
     // -- INQUIRIES
 
-    string GetProcessedLine(
-        string line
+    string GetProcessedText(
+        string text
         )
     {
         char
@@ -532,44 +532,48 @@ class SCRIPT
         long
             character_index;
         string
-            processed_line;
+            processed_text;
 
         for ( character_index = 0;
-              character_index < line.length;
+              character_index < text.length;
               ++character_index )
         {
-            character = line[ character_index ];
+            character = text[ character_index ];
 
             if ( character == '\\'
-                 && character_index + 1 < line.length )
+                 && character_index + 1 < text.length )
             {
                 ++character_index;
-                character = line[ character_index ];
+                character = text[ character_index ];
 
                 if ( character == 'n' )
                 {
-                    processed_line ~= '\n';
+                    processed_text ~= '\n';
                 }
                 else if ( character == 'r' )
                 {
-                    processed_line ~= '\r';
+                    processed_text ~= '\r';
+                }
+                else if ( character == 's' )
+                {
+                    processed_text ~= ' ';
                 }
                 else if ( character == 't' )
                 {
-                    processed_line ~= '\t';
+                    processed_text ~= '\t';
                 }
-                else if ( character != '-' )
+                else if ( character != 'v' )
                 {
-                    processed_line ~= character;
+                    processed_text ~= character;
                 }
             }
             else
             {
-                processed_line ~= character;
+                processed_text ~= character;
             }
         }
 
-        return processed_line;
+        return processed_text;
     }
 
     // ~~
@@ -997,7 +1001,7 @@ class SCRIPT
                     {
                         if ( CommandArray.length > 0 )
                         {
-                            CommandArray[ $ - 1 ].ArgumentArray ~= GetProcessedLine( line[ 4 .. $ ] );
+                            CommandArray[ $ - 1 ].ArgumentArray ~= GetProcessedText( line[ 4 .. $ ] );
                         }
                         else
                         {
@@ -1006,7 +1010,13 @@ class SCRIPT
                     }
                     else
                     {
-                        part_array = GetProcessedLine( line ).split( ' ' );
+                        part_array = line.split( ' ' );
+                        
+                        foreach ( ref part; part_array )
+                        {
+                            part = GetProcessedText( part );
+                        }
+                        
                         CommandArray ~= new COMMAND( part_array[ 0 ], part_array[ 1 .. $ ] );
                     }
                 }

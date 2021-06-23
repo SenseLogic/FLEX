@@ -76,6 +76,17 @@ WriteFiles
 MoveFiles
 ```
 
+### Special characters
+
+```
+\\ : backslash character
+\n : line feed character
+\r : carriage return character
+\s : space character
+\t : tabulation character
+\v : void
+```
+
 ## Installation
 
 Install the [DMD 2 compiler](https://dlang.org/download.html) (using the MinGW setup option on Windows).
