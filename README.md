@@ -67,6 +67,8 @@ SetPascalCase
 SetSnakeCase
 SetKebabCase
 SetTitleCase
+FindLines <line> ...
+SetLines <line> ...
 ListFiles
 ListChangedFiles
 DumpFiles

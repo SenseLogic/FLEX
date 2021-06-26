@@ -676,77 +676,7 @@ class SCRIPT
     }
 
     // -- OPERATIONS
-
-    void SetDefinition(
-        string definition_name,
-        string definition_value
-        )
-    {
-        DefinitionValueMap[ definition_name ] = definition_value;
-    }
-
-    // ~~
-
-    void ForEachDefinition(
-        string[] definition_name_array,
-        string[] definition_value_array,
-        long first_command_index,
-        long post_command_index
-        )
-    {
-        long
-            definition_value_index;
-
-        foreach ( definition_name; definition_name_array )
-        {
-            DefinitionValueMap[ definition_name ] = "";
-        }
-
-        definition_value_index = 0;
-
-        while ( definition_value_index + definition_name_array.length <= definition_value_array.length )
-        {
-            foreach ( definition_name; definition_name_array )
-            {
-                DefinitionValueMap[ definition_name ] = definition_value_array[ definition_value_index ];
-                ++definition_value_index;
-            }
-
-            ExecuteCommands( first_command_index, post_command_index );
-        }
-
-        foreach ( definition_name; definition_name_array )
-        {
-            DefinitionValueMap.remove( definition_name );
-        }
-    }
-
-    // ~~
-
-    void Edit(
-        string[] property_name_array
-        )
-    {
-        PropertyNameArray = [];
-
-        foreach ( property_name; property_name_array )
-        {
-            if ( property_name == "folder"
-                 || property_name == "label"
-                 || property_name == "extension"
-                 || property_name == "text" )
-            {
-                PropertyNameArray ~= property_name;
-            }
-            else
-            {
-                Abort( "Invalid property name : " ~ property_name );
-            }
-        }
-    }
-
-    // ~~
-
+    
     void IncludeFiles(
         string[] file_path_filter_array
         )
@@ -972,6 +902,76 @@ class SCRIPT
             file.Move();
         }
     }
+    
+    // ~~
+    
+    void SetDefinition(
+        string definition_name,
+        string definition_value
+        )
+    {
+        DefinitionValueMap[ definition_name ] = definition_value;
+    }
+
+    // ~~
+
+    void ForEachDefinition(
+        string[] definition_name_array,
+        string[] definition_value_array,
+        long first_command_index,
+        long post_command_index
+        )
+    {
+        long
+            definition_value_index;
+
+        foreach ( definition_name; definition_name_array )
+        {
+            DefinitionValueMap[ definition_name ] = "";
+        }
+
+        definition_value_index = 0;
+
+        while ( definition_value_index + definition_name_array.length <= definition_value_array.length )
+        {
+            foreach ( definition_name; definition_name_array )
+            {
+                DefinitionValueMap[ definition_name ] = definition_value_array[ definition_value_index ];
+                ++definition_value_index;
+            }
+
+            ExecuteCommands( first_command_index, post_command_index );
+        }
+
+        foreach ( definition_name; definition_name_array )
+        {
+            DefinitionValueMap.remove( definition_name );
+        }
+    }
+
+    // ~~
+
+    void Edit(
+        string[] property_name_array
+        )
+    {
+        PropertyNameArray = [];
+
+        foreach ( property_name; property_name_array )
+        {
+            if ( property_name == "folder"
+                 || property_name == "label"
+                 || property_name == "extension"
+                 || property_name == "text" )
+            {
+                PropertyNameArray ~= property_name;
+            }
+            else
+            {
+                Abort( "Invalid property name : " ~ property_name );
+            }
+        }
+    }
 
     // ~~
 
@@ -1055,27 +1055,7 @@ class SCRIPT
 
             writeln( command.GetText() );
 
-            if ( command.Name == "SetDefinition"
-                 && processed_argument_array.length >= 1 )
-            {
-                SetDefinition( command.ArgumentArray[ 0 ], processed_argument_array[ 1 .. $ ].join( ' ' ) );
-            }
-            else if ( command.Name == "ForEachDefinition"
-                      && processed_argument_array.length >= 1 )
-            {
-                colon_argument_index = command.ArgumentArray.countUntil( ":" );
-                end_command_index = GetEndCommandIndex( command_index + 1, post_command_index );
-
-                ForEachDefinition(
-                    command.ArgumentArray[ 0 .. colon_argument_index ],
-                    processed_argument_array[ colon_argument_index + 1 .. $ ],
-                    command_index + 1,
-                    end_command_index
-                    );
-
-                command_index = end_command_index;
-            }
-            else if ( command.Name == "Edit" )
+            if ( command.Name == "Edit" )
             {
                 Edit( processed_argument_array );
             }
@@ -1142,7 +1122,27 @@ class SCRIPT
             {
                 MoveFiles();
             }
-            else
+            else if ( command.Name == "SetDefinition"
+                      && processed_argument_array.length >= 1 )
+            {
+                SetDefinition( command.ArgumentArray[ 0 ], processed_argument_array[ 1 .. $ ].join( ' ' ) );
+            }
+            else if ( command.Name == "ForEachDefinition"
+                      && processed_argument_array.length >= 1 )
+            {
+                colon_argument_index = command.ArgumentArray.countUntil( ":" );
+                end_command_index = GetEndCommandIndex( command_index + 1, post_command_index );
+
+                ForEachDefinition(
+                    command.ArgumentArray[ 0 .. colon_argument_index ],
+                    processed_argument_array[ colon_argument_index + 1 .. $ ],
+                    command_index + 1,
+                    end_command_index
+                    );
+
+                command_index = end_command_index;
+            }
+            else 
             {
                 foreach ( file; FileMap )
                 {
