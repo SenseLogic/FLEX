@@ -37,9 +37,7 @@ ReadFiles
 Edit folder
 ReplacePrefix IN/ OUT/
 Edit label
-SetText Test
-AddSuffix 
-    {first_name}{last_name}
+SetText Test{first_name}{last_name}
 RemoveText \s
 Edit text
 ReplaceText 
