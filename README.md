@@ -32,15 +32,22 @@ WriteFiles
 
 ```bash
 # comment
-SetDefinition <definition name> <definition value>
-ForEachDefinition <definition name> ... : <definition value> ...
-End
 IncludeFiles <file path filter> ...
 ExcludeFiles [file name filter] ...
 SelectFiles [file name filter] ...
 IgnoreFiles [file name filter] ...
 ReadFiles
 Edit [folder] [label] [extension] [text]
+ListFiles
+ListChangedFiles
+DumpFiles
+DumpChangedFiles
+DumpChangedLines [minimum same line count]
+WriteFiles
+MoveFiles
+SetDefinition <definition name> <definition value>
+ForEachDefinition <definition name> ... : <definition value> ...
+End
 AddPrefix <prefix>
 RemovePrefix <prefix>
 ReplacePrefix <old prefix> <new prefix>
@@ -67,15 +74,6 @@ SetPascalCase
 SetSnakeCase
 SetKebabCase
 SetTitleCase
-FindLines <line> ...
-SetLines <line> ...
-ListFiles
-ListChangedFiles
-DumpFiles
-DumpChangedFiles
-DumpChangedLines [minimum same line count]
-WriteFiles
-MoveFiles
 ```
 
 ### Special characters
