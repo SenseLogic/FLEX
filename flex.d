@@ -1633,7 +1633,7 @@ string GetTitleCaseText(
         word = word.GetMajorCaseText();
     }
 
-    return word_array.join( " " );
+    return word_array.join( ' ' );
 }
 
 // ~~
