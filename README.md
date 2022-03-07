@@ -57,14 +57,23 @@ ReplaceSuffix <old suffix> <new suffix>
 SetText <text>
 RemoveText <text>
 ReplaceText <old text> <new text>
+ReplaceAllTexts <old text> <new text>
 RemoveUnquotedText <unquoted text>
+RemoveAllUnquotedTexts <unquoted text>
 ReplaceUnquotedText <old unquoted text> <new unquoted text>
+ReplaceAllUnquotedTexts <old unquoted text> <new unquoted text>
 RemoveQuotedText <quoted text>
+RemoveAllQuotedTexts <quoted text>
 ReplaceQuotedText <old quoted text> <new quoted text>
+ReplaceAllQuotedTexts <old quoted text> <new quoted text>
 RemoveIdentifier <identifier>
-ReplaceIdentifier<old identifier> <new identifier>
+RemoveAllIdentifiers <identifier>
+ReplaceIdentifier <old identifier> <new identifier>
+ReplaceAllIdentifiers <old identifier> <new identifier>
 RemoveExpression <expression>
+RemoveAllExpressions <expression>
 ReplaceExpression <old expression> <new expression>
+ReplaceAllExpressions <old expression> <new expression>
 SetLowerCase
 SetUpperCase
 SetMinorCase

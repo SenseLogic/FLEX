@@ -104,52 +104,102 @@ class COMMAND
         else if ( Name == "RemoveText"
                   && argument_array.length == 1 )
         {
-            return text.RemoveText( argument_array[ 0 ] );
+            return text.RemoveText( argument_array[ 0 ], false );
+        }
+        else if ( Name == "RemoveAllTexts"
+                  && argument_array.length == 1 )
+        {
+            return text.RemoveText( argument_array[ 0 ], true );
         }
         else if ( Name == "ReplaceText"
                   && argument_array.length == 2 )
         {
-            return text.ReplaceText( argument_array[ 0 ], argument_array[ 1 ] );
+            return text.ReplaceText( argument_array[ 0 ], argument_array[ 1 ], false );
+        }
+        else if ( Name == "ReplaceAllTexts"
+                  && argument_array.length == 2 )
+        {
+            return text.ReplaceText( argument_array[ 0 ], argument_array[ 1 ], true );
         }
         else if ( Name == "RemoveUnquotedText"
                   && argument_array.length == 1 )
         {
-            return text.RemoveUnquotedText( argument_array[ 0 ] );
+            return text.RemoveUnquotedText( argument_array[ 0 ], false );
+        }
+        else if ( Name == "RemoveAllUnquotedTexts"
+                  && argument_array.length == 1 )
+        {
+            return text.RemoveUnquotedText( argument_array[ 0 ], true );
         }
         else if ( Name == "ReplaceUnquotedText"
                   && argument_array.length == 2 )
         {
-            return text.ReplaceUnquotedText( argument_array[ 0 ], argument_array[ 1 ] );
+            return text.ReplaceUnquotedText( argument_array[ 0 ], argument_array[ 1 ], false );
+        }
+        else if ( Name == "ReplaceAllUnquotedTexts"
+                  && argument_array.length == 2 )
+        {
+            return text.ReplaceUnquotedText( argument_array[ 0 ], argument_array[ 1 ], true );
         }
         else if ( Name == "RemoveQuotedText"
                   && argument_array.length == 1 )
         {
-            return text.RemoveQuotedText( argument_array[ 0 ] );
+            return text.RemoveQuotedText( argument_array[ 0 ], false );
+        }
+        else if ( Name == "RemoveAllQuotedTexts"
+                  && argument_array.length == 1 )
+        {
+            return text.RemoveQuotedText( argument_array[ 0 ], true );
         }
         else if ( Name == "ReplaceQuotedText"
                   && argument_array.length == 2 )
         {
-            return text.ReplaceQuotedText( argument_array[ 0 ], argument_array[ 1 ] );
+            return text.ReplaceQuotedText( argument_array[ 0 ], argument_array[ 1 ], false );
+        }
+        else if ( Name == "ReplaceAllQuotedTexts"
+                  && argument_array.length == 2 )
+        {
+            return text.ReplaceQuotedText( argument_array[ 0 ], argument_array[ 1 ], true );
         }
         else if ( Name == "RemoveIdentifier"
                   && argument_array.length == 1 )
         {
-            return text.RemoveIdentifier( argument_array[ 0 ] );
+            return text.RemoveIdentifier( argument_array[ 0 ], false );
+        }
+        else if ( Name == "RemoveAllIdentifiers"
+                  && argument_array.length == 1 )
+        {
+            return text.RemoveIdentifier( argument_array[ 0 ], true );
         }
         else if ( Name == "ReplaceIdentifier"
                   && argument_array.length == 2 )
         {
-            return text.ReplaceIdentifier( argument_array[ 0 ], argument_array[ 1 ] );
+            return text.ReplaceIdentifier( argument_array[ 0 ], argument_array[ 1 ], false );
+        }
+        else if ( Name == "ReplaceAllIdentifiers"
+                  && argument_array.length == 2 )
+        {
+            return text.ReplaceIdentifier( argument_array[ 0 ], argument_array[ 1 ], true );
         }
         else if ( Name == "RemoveExpression"
                   && argument_array.length == 1 )
         {
-            return text.RemoveExpression( argument_array[ 0 ] );
+            return text.RemoveExpression( argument_array[ 0 ], false );
+        }
+        else if ( Name == "RemoveAllExpressions"
+                  && argument_array.length == 1 )
+        {
+            return text.RemoveExpression( argument_array[ 0 ], true );
         }
         else if ( Name == "ReplaceExpression"
                   && argument_array.length == 2 )
         {
-            return text.ReplaceExpression( argument_array[ 0 ], argument_array[ 1 ] );
+            return text.ReplaceExpression( argument_array[ 0 ], argument_array[ 1 ], false );
+        }
+        else if ( Name == "ReplaceAllExpressions"
+                  && argument_array.length == 2 )
+        {
+            return text.ReplaceExpression( argument_array[ 0 ], argument_array[ 1 ], true );
         }
         else if ( Name == "SetLowerCase"
                   && argument_array.length == 0 )
@@ -676,7 +726,7 @@ class SCRIPT
     }
 
     // -- OPERATIONS
-    
+
     void IncludeFiles(
         string[] file_path_filter_array
         )
@@ -902,9 +952,9 @@ class SCRIPT
             file.Move();
         }
     }
-    
+
     // ~~
-    
+
     void SetDefinition(
         string definition_name,
         string definition_value
@@ -1011,12 +1061,12 @@ class SCRIPT
                     else
                     {
                         part_array = line.split( ' ' );
-                        
+
                         foreach ( ref part; part_array )
                         {
                             part = GetProcessedText( part );
                         }
-                        
+
                         CommandArray ~= new COMMAND( part_array[ 0 ], part_array[ 1 .. $ ] );
                     }
                 }
@@ -1142,7 +1192,7 @@ class SCRIPT
 
                 command_index = end_command_index;
             }
-            else 
+            else
             {
                 foreach ( file; FileMap )
                 {
@@ -1835,23 +1885,62 @@ string ReplaceSuffix(
 
 // ~~
 
-string RemoveText(
+string ReplaceText(
     string text,
-    string removed_text
+    string old_text,
+    string new_text,
+    bool all_occurrences_are_replaced
     )
 {
-    return text.replace( removed_text, "" );
+    bool
+        text_has_changed;
+    long
+        character_index;
+
+    do
+    {
+        text_has_changed = false;
+
+        if ( old_text.length > 0
+             && text.length >= old_text.length
+             && new_text != old_text  )
+        {
+            character_index = 0;
+
+            while ( character_index + old_text.length <= text.length )
+            {
+                if ( text[ character_index .. character_index + old_text.length ] == old_text )
+                {
+                    text
+                        = text[ 0 .. character_index ]
+                          ~ new_text
+                          ~ text[ character_index + old_text.length .. $ ];
+
+                    text_has_changed = true;
+                    character_index += new_text.length;
+                }
+                else
+                {
+                    ++character_index;
+                }
+            }
+        }
+    }
+    while ( text_has_changed
+            && all_occurrences_are_replaced );
+
+    return text;
 }
 
 // ~~
 
-string ReplaceText(
+string RemoveText(
     string text,
-    string old_text,
-    string new_text
+    string removed_text,
+    bool all_occurrences_are_removed
     )
 {
-    return text.replace( old_text, new_text );
+    return text.ReplaceText( removed_text, "", all_occurrences_are_removed );
 }
 
 // ~~
@@ -1862,12 +1951,14 @@ string ReplaceText(
     string new_text,
     bool old_text_must_be_unquoted,
     bool old_text_must_be_quoted,
-    bool old_text_must_be_in_identifier
+    bool old_text_must_be_in_identifier,
+    bool all_occurrences_are_replaced
     )
 {
     bool
         character_is_in_identifier,
-        it_is_quoted;
+        it_is_quoted,
+        text_has_changed;
     char
         character,
         prior_character,
@@ -1875,76 +1966,84 @@ string ReplaceText(
     long
         character_index;
 
-    if ( old_text.length > 0
-         && text.length >= old_text.length )
+    do
     {
-        quote_character = 0;
-        it_is_quoted = false;
-        character_is_in_identifier = false;
-        prior_character = 0;
-        character_index = 0;
+        text_has_changed = false;
 
-        while ( character_index + old_text.length <= text.length )
+        if ( old_text.length > 0
+             && text.length >= old_text.length )
         {
-            if ( text[ character_index .. character_index + old_text.length ] == old_text )
+            quote_character = 0;
+            it_is_quoted = false;
+            character_is_in_identifier = false;
+            prior_character = 0;
+            character_index = 0;
+
+            while ( character_index + old_text.length <= text.length )
             {
-                character_is_in_identifier
-                    = ( old_text_must_be_in_identifier
-                        && !IsIdentifierCharacter( prior_character )
-                        && ( character_index + old_text.length >= text.length
-                             || !IsIdentifierCharacter( text[ character_index + old_text.length ] ) ) );
-
-                if ( ( !old_text_must_be_unquoted || !it_is_quoted )
-                     && ( !old_text_must_be_quoted || it_is_quoted )
-                     && ( !old_text_must_be_in_identifier || character_is_in_identifier ) )
+                if ( text[ character_index .. character_index + old_text.length ] == old_text )
                 {
-                    prior_character = text[ character_index + old_text.length.to!long() - 1 ];
+                    character_is_in_identifier
+                        = ( old_text_must_be_in_identifier
+                            && !IsIdentifierCharacter( prior_character )
+                            && ( character_index + old_text.length >= text.length
+                                 || !IsIdentifierCharacter( text[ character_index + old_text.length ] ) ) );
 
-                    text
-                        = text[ 0 .. character_index ]
-                          ~ new_text
-                          ~ text[ character_index + old_text.length .. $ ];
+                    if ( ( !old_text_must_be_unquoted || !it_is_quoted )
+                         && ( !old_text_must_be_quoted || it_is_quoted )
+                         && ( !old_text_must_be_in_identifier || character_is_in_identifier ) )
+                    {
+                        prior_character = text[ character_index + old_text.length.to!long() - 1 ];
 
-                    character_index += new_text.length;
+                        text
+                            = text[ 0 .. character_index ]
+                              ~ new_text
+                              ~ text[ character_index + old_text.length .. $ ];
 
-                    continue;
+                        text_has_changed = true;
+                        character_index += new_text.length;
+
+                        continue;
+                    }
                 }
+
+                character = text[ character_index ];
+                prior_character = character;
+
+                if ( it_is_quoted )
+                {
+                    if ( character == quote_character )
+                    {
+                        it_is_quoted = false;
+                    }
+                    else if ( character == '\\' )
+                    {
+                        prior_character = character;
+
+                        character_index += 2;
+
+                        continue;
+                    }
+                }
+                else
+                {
+                    if ( ( old_text_must_be_unquoted || old_text_must_be_quoted )
+                         && IsQuoteCharacter( character ) )
+                    {
+                        it_is_quoted = true;
+
+                        quote_character = character;
+                    }
+                }
+
+                prior_character = text[ character_index ];
+
+                ++character_index;
             }
-
-            character = text[ character_index ];
-            prior_character = character;
-
-            if ( it_is_quoted )
-            {
-                if ( character == quote_character )
-                {
-                    it_is_quoted = false;
-                }
-                else if ( character == '\\' )
-                {
-                    prior_character = character;
-
-                    character_index += 2;
-
-                    continue;
-                }
-            }
-            else
-            {
-                if ( ( old_text_must_be_unquoted || old_text_must_be_quoted )
-                     && IsQuoteCharacter( character ) )
-                {
-                    it_is_quoted = true;
-
-                    quote_character = character;
-                }
-            }
-
-            prior_character = text[ character_index ];
-
-            ++character_index;
         }
     }
+    while ( text_has_changed
+            && all_occurrences_are_replaced );
 
     return text;
 }
@@ -1953,10 +2052,11 @@ string ReplaceText(
 
 string RemoveUnquotedText(
     string text,
-    string unquoted_text
+    string unquoted_text,
+    bool all_occurrences_are_removed
     )
 {
-    return text.ReplaceText( unquoted_text, "", true, false, false );
+    return text.ReplaceText( unquoted_text, "", true, false, false, all_occurrences_are_removed );
 }
 
 // ~~
@@ -1964,20 +2064,22 @@ string RemoveUnquotedText(
 string ReplaceUnquotedText(
     string text,
     string old_unquoted_text,
-    string new_unquoted_text
+    string new_unquoted_text,
+    bool all_occurrences_are_replaced
     )
 {
-    return text.ReplaceText( old_unquoted_text, new_unquoted_text, true, false, false );
+    return text.ReplaceText( old_unquoted_text, new_unquoted_text, true, false, false, all_occurrences_are_replaced );
 }
 
 // ~~
 
 string RemoveQuotedText(
     string text,
-    string quoted_text
+    string quoted_text,
+    bool all_occurrences_are_removed
     )
 {
-    return text.ReplaceText( quoted_text, "", false, true, false );
+    return text.ReplaceText( quoted_text, "", false, true, false, all_occurrences_are_removed );
 }
 
 // ~~
@@ -1985,20 +2087,22 @@ string RemoveQuotedText(
 string ReplaceQuotedText(
     string text,
     string old_quoted_text,
-    string new_quoted_text
+    string new_quoted_text,
+    bool all_occurrences_are_replaced
     )
 {
-    return text.ReplaceText( old_quoted_text, new_quoted_text, false, true, false );
+    return text.ReplaceText( old_quoted_text, new_quoted_text, false, true, false, all_occurrences_are_replaced );
 }
 
 // ~~
 
 string RemoveIdentifier(
     string text,
-    string identifier
+    string identifier,
+    bool all_occurrences_are_removed
     )
 {
-    return text.ReplaceText( identifier, "", false, false, true );
+    return text.ReplaceText( identifier, "", false, false, true, all_occurrences_are_removed );
 }
 
 // ~~
@@ -2006,20 +2110,33 @@ string RemoveIdentifier(
 string ReplaceIdentifier(
     string text,
     string old_identifier,
-    string new_identifier
+    string new_identifier,
+    bool all_occurrences_are_replaced
     )
 {
-    return text.ReplaceText( old_identifier, new_identifier, false, false, true );
+    return text.ReplaceText( old_identifier, new_identifier, false, false, true, all_occurrences_are_replaced );
 }
 
 // ~~
 
 string RemoveExpression(
     string text,
-    string expression
+    string expression,
+    bool all_occurrences_are_removed
     )
 {
-    return text.replaceAll( regex( expression ), "" );
+    string
+        old_text;
+
+    do
+    {
+        old_text = text;
+        text = text.replaceAll( regex( expression ), "" );
+    }
+    while ( text != old_text
+            && all_occurrences_are_removed );
+
+    return text;
 }
 
 // ~~
@@ -2027,10 +2144,22 @@ string RemoveExpression(
 string ReplaceExpression(
     string text,
     string old_expression,
-    string new_expression
+    string new_expression,
+    bool all_occurrences_are_replaced
     )
 {
-    return text.replaceAll( regex( old_expression ), new_expression );
+    string
+        old_text;
+
+    do
+    {
+        old_text = text;
+        text = text.replaceAll( regex( old_expression ), new_expression );
+    }
+    while ( text != old_text
+            && all_occurrences_are_replaced );
+
+    return text;
 }
 
 // ~~
