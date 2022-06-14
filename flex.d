@@ -23,7 +23,7 @@
 import core.stdc.stdlib : exit;
 import std.algorithm: countUntil, sort;
 import std.conv : to;
-import std.file : dirEntries, exists, mkdirRecurse, readText, remove, rmdir, write, SpanMode;
+import std.file : dirEntries, exists, mkdirRecurse, readText, remove, rename, rmdir, write, SpanMode;
 import std.path : globMatch;
 import std.regex : regex, replaceAll;
 import std.stdio : writeln;
@@ -541,6 +541,15 @@ class FILE
 
             IsRead = false;
         }
+        else if ( file_is_moved )
+        {
+            file_path = GetPath();
+
+            if ( file_path != Path )
+            {
+                Path.MoveFile( file_path );
+            }
+        }
         else
         {
             Abort( "File is not read : " ~ GetPath() );
@@ -867,11 +876,31 @@ class SCRIPT
     // ~~
 
     void ReadFiles(
+        string[] file_path_filter_array
         )
     {
         foreach ( file; FileMap )
         {
-            file.Read();
+            if ( file_path_filter_array.length > 0 )
+            {
+                foreach ( file_path_filter; file_path_filter_array )
+                {
+                    if ( file.MatchesFilePathFilter( file_path_filter ) )
+                    {
+                        writeln( "Reading file : " ~ file.Path );
+
+                        file.Read();
+
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                writeln( "Reading file : " ~ file.Path );
+
+                file.Read();
+            }
         }
     }
 
@@ -1126,10 +1155,9 @@ class SCRIPT
             {
                 IgnoreFiles( processed_argument_array.GetLogicalPathArray() );
             }
-            else if ( command.Name == "ReadFiles"
-                      && processed_argument_array.length == 0 )
+            else if ( command.Name == "ReadFiles" )
             {
-                ReadFiles();
+                ReadFiles( processed_argument_array.GetLogicalPathArray() );
             }
             else if ( command.Name == "ListFiles"
                       && processed_argument_array.length == 0 )
@@ -2414,6 +2442,26 @@ void RemoveFile(
     catch ( Exception exception )
     {
         Abort( "Can't remove file : " ~ file_path, exception );
+    }
+}
+
+// ~~
+
+void MoveFile(
+    string old_file_path,
+    string new_file_path
+    )
+{
+    writeln( "Moving file : ", old_file_path, " => ", new_file_path );
+
+    try
+    {
+        old_file_path.GetFolderPath().CreateFolder();
+        old_file_path.rename( new_file_path );
+    }
+    catch ( Exception exception )
+    {
+        Abort( "Can't move file : " ~ old_file_path ~ " => " ~ new_file_path, exception );
     }
 }
 
