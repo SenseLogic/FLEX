@@ -881,25 +881,28 @@ class SCRIPT
     {
         foreach ( file; FileMap )
         {
-            if ( file_path_filter_array.length > 0 )
+            if ( file.IsSelected )
             {
-                foreach ( file_path_filter; file_path_filter_array )
+                if ( file_path_filter_array.length > 0 )
                 {
-                    if ( file.MatchesFilePathFilter( file_path_filter ) )
+                    foreach ( file_path_filter; file_path_filter_array )
                     {
-                        writeln( "Reading file : " ~ file.Path );
+                        if ( file.MatchesFilePathFilter( file_path_filter ) )
+                        {
+                            writeln( "Reading file : " ~ file.Path );
 
-                        file.Read();
+                            file.Read();
 
-                        break;
+                            break;
+                        }
                     }
                 }
-            }
-            else
-            {
-                writeln( "Reading file : " ~ file.Path );
+                else
+                {
+                    writeln( "Reading file : " ~ file.Path );
 
-                file.Read();
+                    file.Read();
+                }
             }
         }
     }
