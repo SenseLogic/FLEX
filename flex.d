@@ -920,6 +920,20 @@ class SCRIPT
 
     // ~~
 
+    void ListRenamedFiles(
+        )
+    {
+        foreach ( file; GetSortedFileArray() )
+        {
+            if ( file.GetPath() != file.Path )
+            {
+                writeln( file.Path, "\n=> ", file.GetPath() );
+            }
+        }
+    }
+
+    // ~~
+
     void ListChangedFiles(
         )
     {
@@ -1166,6 +1180,11 @@ class SCRIPT
                       && processed_argument_array.length == 0 )
             {
                 ListFiles();
+            }
+            else if ( command.Name == "ListRenamedFiles"
+                      && processed_argument_array.length == 0 )
+            {
+                ListRenamedFiles();
             }
             else if ( command.Name == "ListChangedFiles"
                       && processed_argument_array.length == 0 )

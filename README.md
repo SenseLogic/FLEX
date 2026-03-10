@@ -39,6 +39,7 @@ IgnoreFiles [file name filter] ...
 ReadFiles [file name filter] ...
 Edit [folder] [label] [extension] [text]
 ListFiles
+ListRenamedFiles
 ListChangedFiles
 DumpFiles
 DumpChangedFiles
