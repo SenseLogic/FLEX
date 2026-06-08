@@ -2478,7 +2478,7 @@ void MoveFile(
 
     try
     {
-        old_file_path.GetFolderPath().CreateFolder();
+        new_file_path.GetFolderPath().CreateFolder();
         old_file_path.rename( new_file_path );
     }
     catch ( Exception exception )
